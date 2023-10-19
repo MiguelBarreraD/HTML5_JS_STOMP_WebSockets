@@ -7,8 +7,15 @@ var app = (function () {
         }        
     }
     
-    var stompClient = null;
 
+    $('#canvas').click(function () {
+        const point = getMousePosition();
+        console.log(point.x);
+        console.log(point.y);
+    });
+
+    var stompClient = null;
+    
     var addPointToCanvas = function (point) {        
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
@@ -43,7 +50,6 @@ var app = (function () {
         });
 
     };
-    
     
 
     return {
