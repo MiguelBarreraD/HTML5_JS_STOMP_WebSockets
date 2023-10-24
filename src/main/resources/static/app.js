@@ -13,10 +13,21 @@ var app = (function () {
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         ctx.beginPath();
-        ctx.arc(point.x, point.y, 10, 0, 2 * Math.PI);
+        ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
         ctx.stroke();
     };
 
+    var addPolygonCanvas = function (polygon) {
+        let c2 = canvas.getContext('2d');
+        c2.fillStyle = '#3498DB';
+        c2.beginPath();
+        c2.moveTo(polygon[0].x, polygon[0].y);
+        for(let i = 1; i < polygon.length; i++) {
+            c2.lineTo(polygon[i].x,polygon[i].y);
+        }
+        c2.closePath();
+        c2.fill();
+    }
     var getMousePosition = function (evt) {
         canvas = document.getElementById("canvas");
         var rect = canvas.getBoundingClientRect();
@@ -26,7 +37,7 @@ var app = (function () {
         };
     };
 
-    var connectAndSubscribe = function (callback, number) {
+    var connectAndSubscribe = function (callbackPn, callbackPy, number) {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
@@ -35,7 +46,11 @@ var app = (function () {
             console.log('Connected: ' + frame);
             stompClient.subscribe(`/topic/newpoint.${number}}`, function (eventbody) {
                 var theObject = JSON.parse(eventbody.body);
-                addPointToCanvas(theObject);
+                callbackPn(theObject);
+            });
+            stompClient.subscribe(`/topic/newpolygon.${number}}`, function (eventbody) {
+                var theObject = JSON.parse(eventbody.body);
+                callbackPy(theObject);
             });
         });
     };
@@ -49,14 +64,14 @@ var app = (function () {
                 console.log(mousePosition);
                 app.publishPoint(mousePosition.x, mousePosition.y,number);
             });
-            connectAndSubscribe(addPointToCanvas, number); 
+            connectAndSubscribe(addPointToCanvas,addPolygonCanvas,number); 
         },
 
         publishPoint: function (px, py, number) {
             var pt = new Point(px, py);
             console.info("publishing point at " + pt);
             addPointToCanvas(pt);
-            stompClient.send(`/topic/newpoint.${number}}`, {}, JSON.stringify(pt));
+            stompClient.send(`/app/newpoint.${number}}`, {}, JSON.stringify(pt));
         },
 
         disconnect: function () {
