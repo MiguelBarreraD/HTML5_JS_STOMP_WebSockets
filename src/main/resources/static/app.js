@@ -35,16 +35,19 @@ var app = (function () {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/newpoint', function (eventbody) {
                 var theObject = JSON.parse(eventbody.body);
-                callback("Punto " + theObject.x + "," + theObject.y);
+                addPointToCanvas(theObject);
             });
         });
     };
 
     return {
         init: function () {
-            var can = document.getElementById("canvas");
-
-            //websocket connection
+            var canvas = document.getElementById("canvas");
+            canvas.addEventListener("click", function(evt) {
+                var mousePosition = getMousePosition(evt);
+                console.log(mousePosition);
+                app.publishPoint(mousePosition.x, mousePosition.y);
+            });
             connectAndSubscribe(alert);
         },
 
