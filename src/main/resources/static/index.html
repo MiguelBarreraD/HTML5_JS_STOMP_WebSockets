@@ -29,11 +29,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     </head>
 
-    <body onload="app.init()">
+    <body>
         X:<input id="x" type="number"/>
-        Y:<input id="y" type="number"/>        
-        <button onclick="app.publishPoint($('#x').val(),$('#y').val())">Send point</button>
-        
+        Y:<input id="y" type="number"/>  
+        <button onclick="app.publishPoint($('#x').val(),$('#y').val(),$('#numDibujo').val())">Send Point</button>
+        Numero dibujo: <input type="Numero de dibujo" id="numDibujo">      
+        <button onclick="app.conect($('#numDibujo').val())">Conectarse</button>
         <canvas id="canvas" width="800" height="600"></canvas>
     </body>
 </html>
